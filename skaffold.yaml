@@ -55,7 +55,7 @@ build:
 manifests:
   kustomize:
     paths:
-    -  kustomize/base 
+    -  []
 
 deploy:
   kubectl: {}

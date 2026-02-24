@@ -111,7 +111,7 @@ build:
 manifests:
   kustomize:
     paths:
-      - ./kustomize/base /loadgenerator.yaml
+      - ./kustomize/base/loadgenerator.yaml
 deploy:
   kubectl: {}
 profiles:

@@ -56,8 +56,22 @@ manifests:
   kustomize:
     paths:
     -  kustomize/base 
+
 deploy:
   kubectl: {}
+
+profiles:
+  - name: staging
+    manifests:
+      kustomize:
+        paths:
+          - kustomize/environments/staging
+  - name: prod
+    manifests:
+      kustomize:
+        paths:
+          - kustomize/environments/production
+
 # "gcb" profile allows building and pushing the images
 # on Google Container Builder without requiring docker
 # installed on the developer machine. However, note that

@@ -110,8 +110,8 @@ build:
     useBuildkit: true
 manifests:
   kustomize:
-    paths:
-      - ./kustomize/base/loadgenerator.yaml
+     paths:
+      - kustomize/base
 deploy:
   kubectl: {}
 profiles:

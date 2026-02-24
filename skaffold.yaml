@@ -52,10 +52,6 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
-manifests:
-  kustomize:
-    paths:
-    -  kustomize/base 
 
 deploy:
   kubectl: {}
@@ -106,10 +102,6 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
-manifests:
-  kustomize:
-     paths:
-      - kustomize/base
 deploy:
   kubectl: {}
 profiles:

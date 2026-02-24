@@ -66,7 +66,7 @@ profiles:
       kustomize:
         paths:
           - kustomize/environments/staging
-  - name: prod
+  - name: production
     manifests:
       kustomize:
         paths:

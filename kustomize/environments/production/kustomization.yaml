@@ -6,3 +6,14 @@ resources:
   - namespace.yaml
 
 namespace: production
+
+commonLabels:
+  env: production
+
+patches:
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2

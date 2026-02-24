@@ -7,9 +7,6 @@ resources:
 
 namespace: production
 
-commonLabels:
-  env: production
-
 patches:
   - target:
       kind: Deployment

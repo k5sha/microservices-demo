@@ -47,5 +47,5 @@ variable "node_desired_size" {
 variable "single_nat_gateway" {
   description = "Enable single NAT Gateway for all private subnets"
   type        = bool
-  default     = true 
+  default     = true
 }

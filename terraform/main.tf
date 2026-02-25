@@ -33,26 +33,16 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access           = true
 
   eks_managed_node_groups = {
     general = {
-      min_size     = var.node_min_size
-      max_size     = var.node_max_size
-      desired_size = var.node_desired_size
+      min_size       = var.node_min_size
+      max_size       = var.node_max_size
+      desired_size   = var.node_desired_size
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
     }
-  }
-}
-
-resource "aws_eks_access_policy_association" "admin_policy" {
-  cluster_name  = module.eks.cluster_name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = "arn:aws:iam::718286622836:user/terraform-user"
-
-  access_scope {
-    type = "cluster"
   }
 }
 

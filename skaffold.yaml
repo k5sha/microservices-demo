@@ -43,7 +43,7 @@ profiles:
         manifests:
           - kustomize/environments/staging
   - name: production
-    manifests:
-      kustomize:
-        paths:
+    deploy:
+      kubectl:
+        manifests:
           - kustomize/environments/production

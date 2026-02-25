@@ -1,0 +1,30 @@
+name: Destroy Staging
+on: [workflow_dispatch]
+
+jobs:
+  cleanup-and-destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name online-boutique-staging --region eu-central-1
+
+      - name: Force Clean Everything
+        run: |
+          kubectl get svc -n staging --no-headers | grep LoadBalancer | awk '{print $1}' | xargs -I {} kubectl delete svc {} -n staging
+          echo "Очікування видалення AWS ELB..."
+          sleep 60
+          
+      - name: Terraform Init & Destroy
+        working-directory: ./terraform
+        run: |
+          terraform init -backend-config='backend-staging.hcl'
+          terraform destroy -auto-approve -var-file='staging.tfvars'

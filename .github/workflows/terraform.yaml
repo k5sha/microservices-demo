@@ -7,7 +7,17 @@ on:
   pull_request:
     branches: [main, staging]
     paths: ['terraform/**', '.github/workflows/terraform.yaml']
-
+  workflow_dispatch:
+      inputs:
+        environment:
+          description: 'Оберіть середовище для деплою'
+          required: true
+          default: 'staging'
+          type: choice
+          options:
+          - staging
+          - production
+          
 jobs:
   terraform:
     runs-on: ubuntu-latest

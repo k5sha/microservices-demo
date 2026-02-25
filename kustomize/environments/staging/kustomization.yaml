@@ -6,3 +6,19 @@ resources:
   - namespace.yaml
 
 namespace: staging
+
+configMapGenerator:
+  - name: frontend-config
+    literals:
+      - ENV_PLATFORM=aws
+
+patches:
+  - target:
+      kind: Deployment
+      name: frontend
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom
+        value:
+          - configMapRef:
+              name: frontend-config

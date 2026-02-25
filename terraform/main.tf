@@ -46,13 +46,3 @@ module "eks" {
   }
 }
 
-resource "aws_eks_access_policy_association" "admin_policy" {
-  cluster_name  = module.eks.cluster_name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = "arn:aws:iam::718286622836:user/terraform-user"
-
-  access_scope {
-    type = "cluster"
-  }
-}
-

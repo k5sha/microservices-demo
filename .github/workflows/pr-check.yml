@@ -1,0 +1,17 @@
+name: PR Verification
+on:
+  pull_request:
+    branches: [ staging ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [adservice, cartservice, checkoutservice, currencyservice, emailservice, frontend, loadgenerator, paymentservice, productcatalogservice, recommendationservice, shippingservice]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test the code
+        run: go test ./src/${{ matrix.service }}/...
+      - name: Build the Dockerfile
+        run: docker build -t test-image-${{ matrix.service }} ./src/${{ matrix.service }}

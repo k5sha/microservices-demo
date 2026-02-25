@@ -54,7 +54,9 @@ build:
     useBuildkit: true
 
 deploy:
-  kubectl: {}
+  kubectl:
+    waitForRollout: true
+    rolloutTimeout: 300
 
 profiles:
   - name: staging

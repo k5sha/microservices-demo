@@ -34,8 +34,11 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
+    
 deploy:
-  kubectl: {}
+  kustomize:
+    paths:
+      - .
 
 profiles:
   - name: staging

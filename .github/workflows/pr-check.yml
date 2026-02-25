@@ -1,0 +1,19 @@
+name: PR Verification
+on:
+  pull_request:
+    branches: [ staging ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Skaffold
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          sudo install skaffold /usr/local/bin/
+
+      - name: Validate Builds 
+        run: |
+          skaffold build --push=false --platform=linux/amd64 -p staging

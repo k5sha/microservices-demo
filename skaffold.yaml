@@ -3,54 +3,47 @@ kind: Config
 metadata:
   name: online-boutique
 build:
-  platforms: ["linux/amd64"]
-  artifacts:
-  - image: emailservice
-    context: src/emailservice
-  - image: productcatalogservice
-    context: src/productcatalogservice
-  - image: recommendationservice
-    context: src/recommendationservice
-  - image: shoppingassistantservice
-    context: src/shoppingassistantservice
-  - image: shippingservice
-    context: src/shippingservice
-  - image: checkoutservice
-    context: src/checkoutservice
-  - image: paymentservice
-    context: src/paymentservice
-  - image: currencyservice
-    context: src/currencyservice
-  - image: cartservice
-    context: src/cartservice/src
-    docker:
-      dockerfile: Dockerfile
-  - image: frontend
-    context: src/frontend
-  - image: adservice
-    context: src/adservice
-  tagPolicy:
-    gitCommit: {}
   local:
     useDockerCLI: true
     useBuildkit: true
-
-manifests:
-  kustomize:
-    paths:
-    - .
+  
+  platforms: ["linux/amd64"]
+  
+  artifacts:
+    - image: adservice
+      context: src/adservice
+    - image: cartservice
+      context: src/cartservice/src
+    - image: checkoutservice
+      context: src/checkoutservice
+    - image: currencyservice
+      context: src/currencyservice
+    - image: emailservice
+      context: src/emailservice
+    - image: frontend
+      context: src/frontend
+    - image: loadgenerator
+      context: src/loadgenerator
+    - image: paymentservice
+      context: src/paymentservice
+    - image: productcatalogservice
+      context: src/productcatalogservice
+    - image: recommendationservice
+      context: src/recommendationservice
+    - image: shippingservice
+      context: src/shippingservice
 
 deploy:
   kubectl: {}
 
 profiles:
   - name: staging
-    deploy:
-      kubectl:
-          paths:
-            - kustomize/environments/staging
+    manifests:
+      kustomize:
+        paths:
+          - kustomize/environments/staging
   - name: production
-    deploy:
-      kubectl:
-          paths:
-            - kustomize/environments/production
+    manifests:
+      kustomize:
+        paths:
+          - kustomize/environments/production

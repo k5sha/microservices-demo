@@ -1,8 +1,13 @@
+locals {
+  cluster_name = "${var.name}-${var.environment}"
+  vpc_name     = "${var.name}-vpc-${var.environment}"
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
 
-  name = "${var.name}-vpc"
+  name = local.vpc_name
   cidr = "10.0.0.0/16"
 
   azs             = ["${var.region}a", "${var.region}b"]
@@ -10,8 +15,7 @@ module "vpc" {
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
 
   enable_nat_gateway = true
-  # For saving money (for prod set to false)
-  single_nat_gateway = true
+  single_nat_gateway = var.single_nat_gateway
 
   manage_default_security_group  = true
   default_security_group_ingress = []
@@ -22,7 +26,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
 
-  cluster_name    = var.name
+  cluster_name    = local.cluster_name
   cluster_version = "1.32"
 
   vpc_id     = module.vpc.vpc_id
@@ -33,9 +37,9 @@ module "eks" {
 
   eks_managed_node_groups = {
     general = {
-      min_size     = 3
-      max_size     = 6
-      desired_size = 4
+      min_size     = var.node_min_size
+      max_size     = var.node_max_size
+      desired_size = var.node_desired_size
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
     }
@@ -51,3 +55,4 @@ resource "aws_eks_access_policy_association" "admin_policy" {
     type = "cluster"
   }
 }
+

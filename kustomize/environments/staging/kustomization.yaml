@@ -8,4 +8,11 @@ resources:
 namespace: staging
 
 patches:
-  - path: env-patch.yaml
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: ENV_PLATFORM
+          value: staging

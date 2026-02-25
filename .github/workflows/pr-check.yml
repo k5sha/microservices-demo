@@ -29,4 +29,4 @@ jobs:
 
       - name: Validate Builds 
         run: |
-          skaffold build --push=false --platform=linux/amd64 -p staging
+          skaffold build --push=false -p staging

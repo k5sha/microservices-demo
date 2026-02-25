@@ -33,7 +33,7 @@ build:
 deploy:
   kubectl:
     manifests:
-      - kustomize/environments/base
+      - kustomize/environments/base/*
 
 profiles:
   - name: staging

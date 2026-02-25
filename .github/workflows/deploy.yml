@@ -46,4 +46,3 @@ jobs:
             -p $PROFILE \
             --default-repo=$DEFAULT_REPO \
             --cache-artifacts=true \
-            --push=true

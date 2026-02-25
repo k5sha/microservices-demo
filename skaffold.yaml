@@ -47,12 +47,10 @@ profiles:
   - name: staging
     deploy:
       kubectl:
-        kustomize:
           paths:
             - kustomize/environments/staging
   - name: production
     deploy:
       kubectl:
-        kustomize:
           paths:
             - kustomize/environments/production

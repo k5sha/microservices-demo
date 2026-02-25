@@ -3,6 +3,8 @@ kind: Config
 metadata:
   name: online-boutique
 build:
+  cache:
+      enabled: true
   local:
     useDockerCLI: true
     useBuildkit: true

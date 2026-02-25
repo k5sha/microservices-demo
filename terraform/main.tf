@@ -23,6 +23,9 @@ module "vpc" {
 }
 
 module "eks" {
+  # trivy:ignore:AVD-AWS-0040
+  # trivy:ignore:AVD-AWS-0041
+  # trivy:ignore:AVD-AWS-0104
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
 

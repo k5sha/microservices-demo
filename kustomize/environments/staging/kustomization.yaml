@@ -5,4 +5,7 @@ resources:
   - ../../base
   - namespace.yaml
 
+components:
+- components/container-images-registry
+
 namespace: staging

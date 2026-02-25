@@ -7,12 +7,22 @@ resources:
 
 namespace: staging
 
+configMapGenerator:
+  - name: app-config
+    literals:
+      - ENV_PLATFORM=staging
+      - LOG_LEVEL=debug
+
+
+generatorOptions:
+  disableNameSuffixHash: true 
+
 patches:
   - target:
       kind: Deployment
     patch: |-
       - op: add
-        path: "/spec/template/spec/containers/0/env/-"
+        path: /spec/template/spec/containers/0/envFrom
         value:
-          name: ENV_PLATFORM
-          value: "staging"
+          - configMapRef:
+              name: app-config

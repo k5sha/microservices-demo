@@ -10,7 +10,7 @@ namespace: staging
 configMapGenerator:
   - name: frontend-config
     literals:
-      - ENV_PLATFORM=staging
+      - ENV_PLATFORM=aws
 
 patches:
   - target:

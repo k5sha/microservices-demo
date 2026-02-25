@@ -22,7 +22,10 @@ jobs:
           kubectl get svc -n staging --no-headers | grep LoadBalancer | awk '{print $1}' | xargs -I {} kubectl delete svc {} -n staging
           echo "Очікування видалення AWS ELB..."
           sleep 60
-          
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
       - name: Terraform Init & Destroy
         working-directory: ./terraform
         run: |

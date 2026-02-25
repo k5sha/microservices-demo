@@ -6,41 +6,56 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
+  
+  tagPolicy:
+    gitCommit: {}
+    
   artifacts:
-    - image: adservice
-      context: src/adservice
-    - image: cartservice
-      context: src/cartservice/src
-    - image: checkoutservice
-      context: src/checkoutservice
-    - image: currencyservice
-      context: src/currencyservice
     - image: emailservice
       context: src/emailservice
-    - image: frontend
-      context: src/frontend
-    - image: loadgenerator
-      context: src/loadgenerator
-    - image: paymentservice
-      context: src/paymentservice
     - image: productcatalogservice
       context: src/productcatalogservice
     - image: recommendationservice
       context: src/recommendationservice
+    - image: shoppingassistantservice
+      context: src/shoppingassistantservice
     - image: shippingservice
       context: src/shippingservice
-
+    - image: checkoutservice
+      context: src/checkoutservice
+    - image: paymentservice
+      context: src/paymentservice
+    - image: currencyservice
+      context: src/currencyservice
+    - image: cartservice
+      context: src/cartservice/src
+      docker:
+        dockerfile: Dockerfile
+    - image: frontend
+      context: src/frontend
+    - image: adservice
+      context: src/adservice
+    - image: loadgenerator
+      context: src/loadgenerator
+manifests:
+  kustomize:
+    paths:
+    - kustomize/environments/base
 deploy:
   kubectl: {}
+
+
 
 profiles:
   - name: staging
     deploy:
       kubectl:
-        manifests:
-          - kustomize/environments/staging
+        kustomize:
+          paths:
+            - kustomize/environments/staging
   - name: production
     deploy:
       kubectl:
-        manifests:
-          - kustomize/environments/production
+        kustomize:
+          paths:
+            - kustomize/environments/production

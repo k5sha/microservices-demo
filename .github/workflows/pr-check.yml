@@ -11,13 +11,11 @@ jobs:
         service: [adservice, cartservice, checkoutservice, currencyservice, emailservice, frontend, loadgenerator, paymentservice, productcatalogservice, recommendationservice, shippingservice]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install Skaffold
         run: |
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           sudo install skaffold /usr/local/bin/
 
       - name: Validate Builds
-        # Skaffold сам прочитає шляхи до Dockerfile з вашого skaffold.yaml
-        # і перевірить, чи збирається кожен артефакт
-        run: skaffold build
+        run: skaffold build --push=false -p staging

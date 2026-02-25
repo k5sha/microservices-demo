@@ -6,7 +6,7 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
-  
+    push: true
   platforms: ["linux/amd64"]
   
   artifacts:

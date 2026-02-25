@@ -39,6 +39,7 @@ jobs:
         env:
           DEFAULT_REPO: ${{ steps.login-ecr.outputs.registry }}/online-boutique
           PROFILE: 'staging'
+          CLOUDSDK_CONFIG: /tmp/empty
         run: |
           aws eks update-kubeconfig --name online-boutique-staging --region eu-central-1
           

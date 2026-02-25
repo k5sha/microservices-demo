@@ -31,9 +31,7 @@ build:
       context: src/shippingservice
 
 deploy:
-  kubectl:
-    manifests:
-      - kustomize/environments/base
+  kubectl: {}
 
 profiles:
   - name: staging

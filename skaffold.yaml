@@ -3,48 +3,43 @@ kind: Config
 metadata:
   name: online-boutique
 build:
+  platforms: ["linux/amd64"]
+  artifacts:
+  - image: emailservice
+    context: src/emailservice
+  - image: productcatalogservice
+    context: src/productcatalogservice
+  - image: recommendationservice
+    context: src/recommendationservice
+  - image: shoppingassistantservice
+    context: src/shoppingassistantservice
+  - image: shippingservice
+    context: src/shippingservice
+  - image: checkoutservice
+    context: src/checkoutservice
+  - image: paymentservice
+    context: src/paymentservice
+  - image: currencyservice
+    context: src/currencyservice
+  - image: cartservice
+    context: src/cartservice/src
+    docker:
+      dockerfile: Dockerfile
+  - image: frontend
+    context: src/frontend
+  - image: adservice
+    context: src/adservice
+  tagPolicy:
+    gitCommit: {}
   local:
     useDockerCLI: true
     useBuildkit: true
-  
-  tagPolicy:
-    gitCommit: {}
-    
-  artifacts:
-    - image: emailservice
-      context: src/emailservice
-    - image: productcatalogservice
-      context: src/productcatalogservice
-    - image: recommendationservice
-      context: src/recommendationservice
-    - image: shoppingassistantservice
-      context: src/shoppingassistantservice
-    - image: shippingservice
-      context: src/shippingservice
-    - image: checkoutservice
-      context: src/checkoutservice
-    - image: paymentservice
-      context: src/paymentservice
-    - image: currencyservice
-      context: src/currencyservice
-    - image: cartservice
-      context: src/cartservice/src
-      docker:
-        dockerfile: Dockerfile
-    - image: frontend
-      context: src/frontend
-    - image: adservice
-      context: src/adservice
-    - image: loadgenerator
-      context: src/loadgenerator
 manifests:
   kustomize:
     paths:
     - kustomize/environments/base
 deploy:
   kubectl: {}
-
-
 
 profiles:
   - name: staging

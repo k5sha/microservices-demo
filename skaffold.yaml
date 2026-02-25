@@ -9,51 +9,31 @@ build:
   artifacts:
     - image: adservice
       context: src/adservice
-      dependencies:
-        paths: ["src/adservice/**"]
     - image: cartservice
       context: src/cartservice/src
-      dependencies:
-        paths: ["src/cartservice/src/**"]
     - image: checkoutservice
       context: src/checkoutservice
-      dependencies:
-        paths: ["src/checkoutservice/**"]
     - image: currencyservice
       context: src/currencyservice
-      dependencies:
-        paths: ["src/currencyservice/**"]
     - image: emailservice
       context: src/emailservice
-      dependencies:
-        paths: ["src/emailservice/**"]
     - image: frontend
       context: src/frontend
-      dependencies:
-        paths: ["src/frontend/**"]
     - image: loadgenerator
       context: src/loadgenerator
-      dependencies:
-        paths: ["src/loadgenerator/**"]
     - image: paymentservice
       context: src/paymentservice
-      dependencies:
-        paths: ["src/paymentservice/**"]
     - image: productcatalogservice
       context: src/productcatalogservice
-      dependencies:
-        paths: ["src/productcatalogservice/**"]
     - image: recommendationservice
       context: src/recommendationservice
-      dependencies:
-        paths: ["src/recommendationservice/**"]
     - image: shippingservice
       context: src/shippingservice
-      dependencies:
-        paths: ["src/shippingservice/**"]
 
 deploy:
-  kubectl: {}
+  kubectl:
+    manifests:
+      - kustomize/environments/base
 
 profiles:
   - name: staging

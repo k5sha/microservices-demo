@@ -6,9 +6,6 @@ build:
   local:
     useDockerCLI: true
     useBuildkit: true
-  
-  platforms: ["linux/amd64"]
-  
   artifacts:
     - image: adservice
       context: src/adservice
@@ -38,12 +35,12 @@ deploy:
 
 profiles:
   - name: staging
-    manifests:
-      kustomize:
-        paths:
+    deploy:
+      kubectl:
+        manifests:
           - kustomize/environments/staging
   - name: production
-    manifests:
-      kustomize:
-        paths:
+    deploy:
+      kubectl:
+        manifests:
           - kustomize/environments/production

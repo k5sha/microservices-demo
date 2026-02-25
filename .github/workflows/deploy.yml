@@ -2,13 +2,22 @@ name: Global CI/CD Pipeline
 
 on:
   push:
-    branches: [ staging, main ]
+    branches: [ staging ]
 
 jobs:
   skaffold-run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Skaffold layers
+        uses: actions/cache@v4
+        with:
+          path: ~/.skaffold/cache
+          key: skaffold-${{ runner.os }}-${{ hashFiles('**/Dockerfile', 'skaffold.yaml') }}
+          restore-keys: |
+            skaffold-${{ runner.os }}-
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -17,7 +26,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Login to ECR
+      - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -29,7 +38,12 @@ jobs:
       - name: Deploy with Skaffold
         env:
           DEFAULT_REPO: ${{ steps.login-ecr.outputs.registry }}/online-boutique
-          PROFILE: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+          PROFILE: 'staging'
         run: |
           aws eks update-kubeconfig --name online-boutique-staging --region eu-central-1
-          skaffold run -p $PROFILE --default-repo=$DEFAULT_REPO
+          
+          skaffold run \
+            -p $PROFILE \
+            --default-repo=$DEFAULT_REPO \
+            --cache-artifacts=true \
+            --push=true

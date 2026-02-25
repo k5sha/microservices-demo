@@ -38,9 +38,9 @@ deploy:
 
 profiles:
   - name: staging
-    manifests:
-      kustomize:
-        paths:
+    deploy:
+      kubectl:
+        manifests:
           - kustomize/environments/staging
   - name: production
     manifests:

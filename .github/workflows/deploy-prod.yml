@@ -36,7 +36,7 @@ jobs:
         run: |
           aws eks update-kubeconfig --name online-boutique-production --region eu-central-1
           
-          skaffold run -p $PROFILE --default-repo=$DEFAULT_REPO --no-build
+          skaffold run -p $PROFILE --default-repo=$DEFAULT_REPO
 
       - name: Health Check and Rollback
         run: |

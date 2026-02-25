@@ -14,4 +14,3 @@ patches:
       - op: replace
         path: /spec/replicas
         value: 2
-  - path: env-patch.yaml

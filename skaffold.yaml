@@ -35,8 +35,13 @@ build:
     useDockerCLI: true
     useBuildkit: true
 
+manifests:
+  kustomize:
+    paths:
+    - .
+
 deploy:
-  kustomize: {}
+  kubectl: {}
 
 profiles:
   - name: staging

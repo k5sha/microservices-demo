@@ -1,7 +1,7 @@
 locals {
   cluster_name = "${var.name}-${var.environment}"
   vpc_name     = "${var.name}-vpc-${var.environment}"
-  region       = "eu-central-1"
+  region       = var.region
 }
 
 module "vpc" {
@@ -34,7 +34,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = local.cluster_name
-  cluster_version = "1.32"
+  cluster_version = "1.33"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -46,9 +46,9 @@ module "eks" {
 
   eks_managed_node_groups = {
     general = {
-      min_size       = 1
-      max_size       = 3
-      desired_size   = 2
+      min_size       = var.node_min_size
+      max_size       = var.node_max_size
+      desired_size   = var.node_desired_size
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
     }

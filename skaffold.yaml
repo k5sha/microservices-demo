@@ -7,7 +7,7 @@ build:
     useDockerCLI: true
     useBuildkit: true
     push: true
-    platforms: ["linux/amd64"]
+  platforms: ["linux/amd64"]
   
   artifacts:
     - image: adservice
@@ -39,8 +39,9 @@ deploy:
 profiles:
   - name: local
     build:
-        platforms: ["linux/amd64"]
         local:
+          useDockerCLI: true
+          useBuildkit: true
           push: false
     manifests:
         kustomize:

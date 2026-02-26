@@ -37,6 +37,16 @@ deploy:
   kubectl: {}
 
 profiles:
+  - name: local
+    build:
+        local:
+          useDockerCLI: true
+          useBuildkit: true
+          push: false
+    manifests:
+        kustomize:
+          paths:
+            - kustomize/base
   - name: staging
     manifests:
       kustomize:

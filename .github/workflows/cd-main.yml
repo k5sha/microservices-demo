@@ -106,17 +106,12 @@ jobs:
         run: |
           kubectl rollout status deployment/frontend -n ${{ steps.vars.outputs.ns }} --timeout=120s
 
-      - name: Get Frontend URL and Summary
+      - name: Get Ingress URL
         run: |
-          sleep 15
+          URL=$(kubectl get ingress online-boutique-ingress -n ${{ steps.vars.outputs.ns }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           
-          URL=$(kubectl get svc frontend-external -n ${{ steps.vars.outputs.ns }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          HOST=$(kubectl get ingress online-boutique-ingress -n ${{ steps.vars.outputs.ns }} -o jsonpath='{.spec.rules[0].host}')
           
-          echo "### 🚀 Деплой у ${{ steps.vars.outputs.ns }} успішний!" >> $GITHUB_STEP_SUMMARY
-          echo "**Deploy Tag:** \`${{ steps.vars.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
-          
-          if [ -n "$URL" ]; then
-            echo "**🌍 Посилання на Frontend:** [http://$URL](http://$URL)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Балансувальник ще ініціалізується. Зачекайте кілька хвилин та перевірте консоль AWS." >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "### 🚀 Деплой успішний!" >> $GITHUB_STEP_SUMMARY
+          echo "**🌍 Пряме посилання:** [http://$HOST](http://$HOST)" >> $GITHUB_STEP_SUMMARY
+          echo "**🔗 AWS ALB DNS:** http://$URL" >> $GITHUB_STEP_SUMMARY

@@ -35,10 +35,12 @@ jobs:
       - name: Build and Push to ECR (Versioned & Latest)
         run: |
           skaffold build --tag=${{ github.run_number }} \
+            --cache-artifacts=true \
             --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }} \
             --push=true
 
           skaffold build --tag=latest \
+            --cache-artifacts=true \
             --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }} \
             --push=true
 

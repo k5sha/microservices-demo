@@ -7,6 +7,11 @@ resources:
 
 namespace: production
 
+configMapGenerator:
+  - name: frontend-config
+    literals:
+      - ENV_PLATFORM=aws
+      
 patches:
   - target:
       kind: Deployment

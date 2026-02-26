@@ -809,7 +809,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: frontend-external
   labels:
     app: frontend
 spec:

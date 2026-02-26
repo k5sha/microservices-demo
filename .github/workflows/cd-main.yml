@@ -32,9 +32,13 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           sudo install skaffold /usr/local/bin/
 
-      - name: Build and Push to ECR
+      - name: Build and Push to ECR (Versioned & Latest)
         run: |
-          skaffold build --tag=${{ github.sha }} \
+          skaffold build --tag=${{ github.run_number }} \
+            --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }} \
+            --push=true
+
+          skaffold build --tag=latest \
             --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }} \
             --push=true
 
@@ -71,10 +75,12 @@ jobs:
             echo "cluster=online-boutique-production" >> $GITHUB_OUTPUT
             echo "ns=production" >> $GITHUB_OUTPUT
             echo "profile=production" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT # Для Prod завжди беремо останній перевірений зі Staging
           else
             echo "cluster=online-boutique-staging" >> $GITHUB_OUTPUT
             echo "ns=staging" >> $GITHUB_OUTPUT
             echo "profile=staging" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT # Для Staging деплоїмо поточну збірку
           fi
 
       - name: Deploy to Cluster
@@ -83,7 +89,7 @@ jobs:
           
           skaffold deploy \
             -p ${{ steps.vars.outputs.profile }} \
-            --tag=${{ github.sha }} \
+            --tag=${{ steps.vars.outputs.tag }} \
             --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}
 
       - name: Health Check
@@ -97,7 +103,7 @@ jobs:
           URL=$(kubectl get svc frontend-external -n ${{ steps.vars.outputs.ns }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           
           echo "### 🚀 Деплой у ${{ steps.vars.outputs.ns }} успішний!" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit SHA:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deploy Tag:** \`${{ steps.vars.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
           
           if [ -n "$URL" ]; then
             echo "**🌍 Посилання на Frontend:** [http://$URL](http://$URL)" >> $GITHUB_STEP_SUMMARY

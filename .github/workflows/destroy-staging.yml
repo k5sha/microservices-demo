@@ -17,11 +17,51 @@ jobs:
       - name: Update Kubeconfig
         run: aws eks update-kubeconfig --name online-boutique-staging --region eu-central-1
 
-      - name: Force Clean Everything
+      - name: Force Clean Kubernetes Resources
         run: |
-          kubectl get svc -n staging --no-headers | grep LoadBalancer | awk '{print $1}' | xargs -I {} kubectl delete svc {} -n staging
-          echo "Очікування видалення AWS ELB..."
-          sleep 60
+            echo "=== Початок примусового очищення Kubernetes ресурсів ==="
+            
+            echo "1. Видалення Ingress ресурсів..."
+            kubectl delete ingress -n staging --all --timeout=60s || true
+            
+            echo "2. Видалення Service з типом LoadBalancer..."
+            kubectl get svc -n staging -o json | jq -r '.items[] | select(.spec.type=="LoadBalancer") | .metadata.name' | while read svc; do
+              echo "   Видалення сервісу: $svc"
+              kubectl delete svc $svc -n staging --timeout=60s || true
+            done
+            
+            echo "3. Видалення TargetGroupBindings..."
+            kubectl get targetgroupbindings -n staging --no-headers 2>/dev/null | awk '{print $1}' | xargs -I {} kubectl delete targetgroupbinding {} -n staging --timeout=30s || true
+            
+            echo "4. Видалення всіх ресурсів в namespace staging..."
+            kubectl delete namespace staging --timeout=120s || true
+            
+            echo "5. Очікування видалення AWS Load Balancers (60 секунд)..."
+            sleep 60
+            
+            echo "6. Перевірка залишкових ENI в AWS..."
+            VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=*staging*" --query 'Vpcs[0].VpcId' --output text 2>/dev/null)
+            
+            if [ ! -z "$VPC_ID" ] && [ "$VPC_ID" != "None" ]; then
+              echo "   Пошук ENI в VPC: $VPC_ID"
+              ENIS=$(aws ec2 describe-network-interfaces --filters "Name=vpc-id,Values=$VPC_ID" --query 'NetworkInterfaces[?Status!=`available`].NetworkInterfaceId' --output text 2>/dev/null)
+              
+              for ENI in $ENIS; do
+                echo "   Знайдено активний ENI: $ENI"
+                
+                ATTACH_ID=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI --query 'NetworkInterfaces[0].Attachment.AttachmentId' --output text 2>/dev/null)
+                if [ "$ATTACH_ID" != "None" ] && [ ! -z "$ATTACH_ID" ]; then
+                  echo "      Від'єднання ENI: $ATTACH_ID"
+                  aws ec2 detach-network-interface --attachment-id $ATTACH_ID --region eu-central-1 || true
+                  sleep 5
+                fi
+                
+                echo "      Видалення ENI: $ENI"
+                aws ec2 delete-network-interface --network-interface-id $ENI --region eu-central-1 || true
+              done
+            fi
+            
+            echo "=== Очищення Kubernetes ресурсів завершено ==="
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

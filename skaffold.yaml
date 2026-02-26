@@ -39,6 +39,7 @@ deploy:
 profiles:
   - name: local
     build:
+        platforms: ["linux/amd64"]
         local:
           push: false
     manifests:

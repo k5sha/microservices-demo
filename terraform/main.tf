@@ -66,4 +66,6 @@ module "eks_blueprints_addons" {
   oidc_provider_arn = module.eks.oidc_provider_arn
 
   enable_aws_load_balancer_controller = true
+
+  depends_on = [module.eks]
 }

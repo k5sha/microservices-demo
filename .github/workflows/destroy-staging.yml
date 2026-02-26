@@ -39,28 +39,6 @@ jobs:
             echo "5. Очікування видалення AWS Load Balancers (60 секунд)..."
             sleep 60
             
-            echo "6. Перевірка залишкових ENI в AWS..."
-            VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=*staging*" --query 'Vpcs[0].VpcId' --output text 2>/dev/null)
-            
-            if [ ! -z "$VPC_ID" ] && [ "$VPC_ID" != "None" ]; then
-              echo "   Пошук ENI в VPC: $VPC_ID"
-              ENIS=$(aws ec2 describe-network-interfaces --filters "Name=vpc-id,Values=$VPC_ID" --query 'NetworkInterfaces[?Status!=`available`].NetworkInterfaceId' --output text 2>/dev/null)
-              
-              for ENI in $ENIS; do
-                echo "   Знайдено активний ENI: $ENI"
-                
-                ATTACH_ID=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI --query 'NetworkInterfaces[0].Attachment.AttachmentId' --output text 2>/dev/null)
-                if [ "$ATTACH_ID" != "None" ] && [ ! -z "$ATTACH_ID" ]; then
-                  echo "      Від'єднання ENI: $ATTACH_ID"
-                  aws ec2 detach-network-interface --attachment-id $ATTACH_ID --region eu-central-1 || true
-                  sleep 5
-                fi
-                
-                echo "      Видалення ENI: $ENI"
-                aws ec2 delete-network-interface --network-interface-id $ENI --region eu-central-1 || true
-              done
-            fi
-            
             echo "=== Очищення Kubernetes ресурсів завершено ==="
 
       - name: Setup Terraform

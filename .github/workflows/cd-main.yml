@@ -1,0 +1,106 @@
+name: Global CI/CD Pipeline
+
+on:
+  push:
+    branches: [ staging, main ]
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPO: online-boutique
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Install Skaffold
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          sudo install skaffold /usr/local/bin/
+
+      - name: Build and Push to ECR
+        run: |
+          skaffold build --tag=${{ github.sha }} \
+            --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }} \
+            --push=true
+
+  deploy:
+    needs: [build]
+    if: always() && (needs.build.result == 'success' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Install Skaffold & Kubectl
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          sudo install skaffold /usr/local/bin/
+
+      - name: Set Variables
+        id: vars
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "cluster=online-boutique-production" >> $GITHUB_OUTPUT
+            echo "ns=production" >> $GITHUB_OUTPUT
+            echo "profile=production" >> $GITHUB_OUTPUT
+          else
+            echo "cluster=online-boutique-staging" >> $GITHUB_OUTPUT
+            echo "ns=staging" >> $GITHUB_OUTPUT
+            echo "profile=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Cluster
+        run: |
+          aws eks update-kubeconfig --name ${{ steps.vars.outputs.cluster }} --region ${{ env.AWS_REGION }}
+          
+          skaffold deploy \
+            -p ${{ steps.vars.outputs.profile }} \
+            --tag=${{ github.sha }} \
+            --default-repo=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}
+
+      - name: Health Check
+        run: |
+          kubectl rollout status deployment/frontend -n ${{ steps.vars.outputs.ns }} --timeout=120s
+
+      - name: Get Frontend URL and Summary
+        run: |
+          sleep 15
+          
+          URL=$(kubectl get svc frontend-external -n ${{ steps.vars.outputs.ns }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          echo "### 🚀 Деплой у ${{ steps.vars.outputs.ns }} успішний!" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit SHA:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "$URL" ]; then
+            echo "**🌍 Посилання на Frontend:** [http://$URL](http://$URL)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Балансувальник ще ініціалізується. Зачекайте кілька хвилин та перевірте консоль AWS." >> $GITHUB_STEP_SUMMARY
+          fi

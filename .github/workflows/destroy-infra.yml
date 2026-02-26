@@ -1,0 +1,70 @@
+name: Infrastructure Destruction (DANGER)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Оберіть середовище для деплою'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  cleanup-and-destroy:
+    name: Destroy ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Update Kubeconfig
+        run: |
+          CLUSTER_NAME="online-boutique-${{ github.event.inputs.environment }}"
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region eu-central-1
+
+      - name: Force Clean Kubernetes Resources
+        run: |
+          ENV_NAME="${{ github.event.inputs.environment }}"
+          echo "=== Початок примусового очищення Kubernetes ресурсів для $ENV_NAME ==="
+          
+          echo "1. Видалення Ingress ресурсів..."
+          kubectl delete ingress -n $ENV_NAME --all --timeout=60s || true
+          
+          echo "2. Видалення Service з типом LoadBalancer..."
+          kubectl get svc -n $ENV_NAME -o json | jq -r '.items[] | select(.spec.type=="LoadBalancer") | .metadata.name' | while read svc; do
+            echo "   Видалення сервісу: $svc"
+            kubectl delete svc $svc -n $ENV_NAME --timeout=60s || true
+          done
+          
+          echo "3. Видалення TargetGroupBindings..."
+          kubectl get targetgroupbindings -n $ENV_NAME --no-headers 2>/dev/null | awk '{print $1}' | xargs -I {} kubectl delete targetgroupbinding {} -n $ENV_NAME --timeout=30s || true
+          
+          echo "4. Видалення всіх ресурсів в namespace $ENV_NAME..."
+          kubectl delete namespace $ENV_NAME --timeout=120s || true
+          
+          echo "5. Очікування видалення AWS Load Balancers (60 секунд)..."
+          sleep 60
+          
+          echo "=== Очищення Kubernetes ресурсів завершено ==="
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
+      - name: Terraform Init & Destroy
+        working-directory: ./terraform
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          terraform init -backend-config="backend-$ENV.hcl"
+          terraform destroy -auto-approve -var-file="$ENV.tfvars"

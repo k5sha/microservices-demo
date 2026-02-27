@@ -2,6 +2,8 @@ locals {
   cluster_name = "${var.name}-${var.environment}"
   vpc_name     = "${var.name}-vpc-${var.environment}"
   region       = var.region
+
+  domain_name = var.environment == "production" ? "demo.zipzip.online" : "staging.demo.zipzip.online"
 }
 
 module "vpc" {
@@ -106,6 +108,62 @@ resource "helm_release" "alb_controller" {
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.lb_role.iam_role_arn
+  }
+
+  depends_on = [module.eks]
+}
+
+module "external_dns_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
+  role_name                  = "${local.cluster_name}-external-dns"
+  attach_external_dns_policy = true
+
+  external_dns_hosted_zone_arns = ["arn:aws:route53:::hostedzone/*"]
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:external-dns"]
+    }
+  }
+}
+
+resource "helm_release" "external_dns" {
+  name       = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
+  chart      = "external-dns"
+  namespace  = "kube-system"
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "external-dns"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = module.external_dns_irsa_role.iam_role_arn
+  }
+
+  set {
+    name  = "policy"
+    value = "sync"
+  }
+
+  set {
+    name  = "domainFilters[0]"
+    value = local.domain_name
+  }
+
+  set {
+    name  = "txtOwnerId"
+    value = local.cluster_name
   }
 
   depends_on = [module.eks]

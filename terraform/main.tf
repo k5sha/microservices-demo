@@ -158,12 +158,17 @@ resource "helm_release" "external_dns" {
 
   set {
     name  = "domainFilters[0]"
-    value = local.domain_name
+    value = "zipzip.online"
   }
 
   set {
     name  = "txtOwnerId"
     value = local.cluster_name
+  }
+
+  set {
+    name  = "provider"
+    value = "aws"
   }
 
   depends_on = [module.eks]

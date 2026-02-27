@@ -6,9 +6,8 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
-    alb.ingress.kubernetes.io/healthcheck-path: "/_healthz"
-    alb.ingress.kubernetes.io/load-balancer-name: "staging-online-boutique"
+    external-dns.alpha.kubernetes.io/hostname: staging.demo.zipzip.online
+    alb.ingress.kubernetes.io/load-balancer-name: "staging-bou"
 spec:
   ingressClassName: alb
   rules:
@@ -22,3 +21,5 @@ spec:
             name: frontend
             port:
               number: 80
+
+             

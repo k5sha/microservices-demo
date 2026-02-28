@@ -104,7 +104,7 @@
 
 ### 🛠 GitHub Actions Pipelines
 
-[**🔗 Подробніше про пайплайни тут**](https://github.com/k5sha/microservices-demo/docs/pipeline.md)
+[**🔗 Подробніше про пайплайни тут**](https://github.com/k5sha/microservices-demo/blob/main/docs/pipeline.md)
 
 <img width="1710" height="992" alt="Screenshot 2026-02-28 at 10 25 48" src="https://github.com/user-attachments/assets/3b4f49ca-693a-4236-896f-b5ffa8d2408f" />
 
@@ -118,7 +118,7 @@
 
 ### 📊 Моніторинг та Дашборди
 
-[**🔗 Подробніше про моніторинг тут**](https://github.com/k5sha/microservices-demo/docs/dashboard.md)
+[**🔗 Подробніше про моніторинг тут**](https://github.com/k5sha/microservices-demo/blob/main/docs/dashboard.md)
 
 <img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Production.jpg" />
 <img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Staging.jpg" />
@@ -143,3 +143,4 @@
 
 
  додай навігацію 
+

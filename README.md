@@ -117,6 +117,12 @@
 #### ERC, місце де зберігаються наші збілджені образи:
 <img width="1710" height="987" alt="image" src="https://github.com/user-attachments/assets/77ae00d6-e94b-4ff9-b45d-92fb07e001b2" />
 
+<img width="1710" height="986" alt="image" src="https://github.com/user-attachments/assets/15c01036-6c75-45f8-899a-d1a43c6147c9" />
+
+<img width="1710" height="986" alt="image" src="https://github.com/user-attachments/assets/81af7e4b-7f36-4cf7-aae4-eebab241999e" />
+
+<img width="1710" height="987" alt="image" src="https://github.com/user-attachments/assets/77ae00d6-e94b-4ff9-b45d-92fb07e001b2" />
+
 
 ### 🛠 GitHub Actions Pipelines
 

@@ -1,10 +1,24 @@
-# EKS Observability: CloudWatch Dashboards & Alarms
+<h1 align="center">Online Boutique by ExitCodeOne</h1>
 
-## 1) Dashboards
+<p align="center">
+  <img src="https://github.com/k5sha/microservices-demo/actions/workflows/cd-main.yml/badge.svg" alt="Global CI/CD Pipeline">
+</p>
+
+<p align="center">
+  <strong>Production-ready мікросервісна архітектура в AWS EKS з повною автоматизацією CI/CD</strong>
+</p>
+
+
+## 📊 Моніторинг та сповіщення (Dashboards & Alarms)
+
+Для забезпечення повної спостерігаємості (Observability) за станом системи в AWS CloudWatch створено набір дашбордів та автоматичних сповіщень для середовищ Production та Staging.
+
+## 📈 Dashboards
+Система моніторингу розділена на три логічні рівні для швидкої діагностики.
 
 ### 1.1 App Reliability (Production / Staging)
 
-Швидко підтвердити, чи працює сервіс належним чином з точки зору користувача.
+Використовується для того, щоб швидко підтвердити, чи працює сервіс належним чином з точки зору користувача.
 
 **Widgets:**
 - **Uptime (gauge)** — загальна кількість запитів на ALB `HealthyHostCount / UnHealthyHostCount` (`AWS/ApplicationELB`)
@@ -20,7 +34,7 @@
 
 ### 1.2 App Scalability (Production / Staging)
 
-Перевірити поведінку масштабування та виявити вузькі місця.
+Використовується для того, щоб перевірити поведінку масштабування та виявити вузькі місця.
 
 **Widgets:**
 - **Request Count (gauge / timeseries)** — вхідний трафік
@@ -36,7 +50,7 @@
 
 ### 1.3 Infra Health (Production / Staging)
 
-Стан платформи (EKS/nodes/control plane).
+Використовується для того, щоб для перевірки стану платформи (EKS/nodes/control plane).
 
 **Widgets:**
 - **Node CPU (EC2 avg, 5m)** — `AWS/EC2 CPUUtilization` by ASG
@@ -49,9 +63,8 @@
 
 ---
 
-## 2) Alarms
-
-Створено **6 alarms** (Prod + Staging).
+## 2. 🚨 Alarms
+Налаштовано 6 активних сповіщень, що покривають критичні аспекти роботи системи в обох середовищах.
 
 ### 2.1 Resource pressure / scalability
 - **Pod CPU High STAG** — `pod_cpu_utilization > 80` протягом **5 minutes**
@@ -67,5 +80,3 @@
 
 > **Note:** `apiserver_request_total_5XX` це **EKS control plane 5xx**, а не додаток 5xx.
 <img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/Alarms.jpg" />
----
-

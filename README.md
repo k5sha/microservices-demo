@@ -1,4 +1,3 @@
-<img width="1710" height="1037" alt="image" src="https://github.com/user-attachments/assets/df16be4e-dc94-45eb-af5f-a424cb0f1104" />
 <h1 align="center">Online Boutique by ExitCodeOne</h1>
 
 <p align="center">
@@ -103,4 +102,5 @@
 
 ---
 <p align="center">Made with ❤️ by ExitCodeOne</p>
+
 

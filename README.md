@@ -19,7 +19,7 @@
 🔗 **[Відкрити схему в Excalidraw](https://excalidraw.com/#json=5fnDh-32ql4_Xd6SIOvYB,Qn4GoZNAvCFx-Q77v1zsrQ)**
 
 ### 🛠 Технічні особливості реалізації
-**EKS Control Plane:** Повністю керований кластер, де AWS відповідає за доступність API Server, Scheduler та Etcd. Використання Cloud Controller Manager забезпечує нативну інтеграцію з ресурсами AWS.
+**EKS Control Plane:** Повністю керований кластер, де AWS відповідає за доступність API Server, Scheduler та Etcd. Забезпечує нативну інтеграцію з ресурсами AWS.
 
 **Networking & High Availability:** VPC Multi-AZ - мережа розгорнута у двох зонах доступності (AZ A/B) для забезпечення відмовостійкості.
 
@@ -57,11 +57,27 @@
 ### Pipeline Workflows:
 
 1.  **Terraform CI/CD:** Автоматично валідує, планує та застосовує зміни інфраструктури. Використовує окремі S3 Backends для `staging` та `production`.
+
+
 2.  **Global CI/CD (Skaffold):**
-    * **Build:** Збирає Docker-образи, тегує їх номером запуску (`run_number`) та пушить в Amazon ECR.
-    * **Deploy:** Оновлює `kubeconfig`, підставляє актуальні теги та деплоїть маніфести в потрібний Namespace.
-    * **Health Check:** Очікує на успішний Rollout фронтенду перед завершенням.
+
+    - **Build:** Збирає Docker-образи, тегує їх номером запуску (`run_number`) та пушить в Amazon ECR.
+    
+    - **Deploy:** Оновлює `kubeconfig`, підставляє актуальні теги та деплоїть маніфести в потрібний Namespace.
+    
+    - **Health Check:** Очікує на успішний Rollout фронтенду перед завершенням.
+    
 3.  **Infrastructure Destruction (DANGER):** Спеціальний Workflow для повного видалення ресурсів. Спочатку примусово очищує Kubernetes-ресурси (Ingress, LB), щоб уникнути "завислих" ресурсів в AWS, а потім виконує `terraform destroy`.
+
+---
+
+## 🛠 Технологічний стек
+* **IaC:** Terraform
+* **Orchestration:** Kubernetes (EKS)
+* **Package Manager:** Kustomization
+* **Development Tool:** Skaffold
+* **CI/CD:** GitHub Actions
+* **Cloud:** AWS (VPC, EKS, ECR, ALB, Route 53)
 
 ---
 
@@ -104,7 +120,7 @@
 
 ### 🛠 GitHub Actions Pipelines
 
-[**🔗 Подробніше про пайплайни тут**](https://github.com/k5sha/microservices-demo/docs/pipeline.md)
+[**🔗 Подробніше про пайплайни тут**](https://github.com/k5sha/microservices-demo/blob/main/docs/pipeline.md)
 
 <img width="1710" height="992" alt="Screenshot 2026-02-28 at 10 25 48" src="https://github.com/user-attachments/assets/3b4f49ca-693a-4236-896f-b5ffa8d2408f" />
 
@@ -118,7 +134,7 @@
 
 ### 📊 Моніторинг та Дашборди
 
-[**🔗 Подробніше про моніторинг тут**](https://github.com/k5sha/microservices-demo/docs/dashboard.md)
+[**🔗 Подробніше про моніторинг тут**](https://github.com/k5sha/microservices-demo/blob/main/docs/dashboard.md)
 
 <img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Production.jpg" />
 <img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Staging.jpg" />
@@ -130,16 +146,21 @@
 
 ---
 
-## 🛠 Технологічний стек
-* **IaC:** Terraform
-* **Orchestration:** Kubernetes (EKS)
-* **Package Manager:** Kustomization
-* **Development Tool:** Skaffold
-* **CI/CD:** GitHub Actions
-* **Cloud:** AWS (VPC, EKS, ECR, ALB, Route 53)
+
+
+## 📅 Майбутні покращення (Backlog)
+
+- [ ] Security: Впровадження HashiCorp Vault для керування секретами замість Github Secrets.
+
+- [ ] Service Mesh: Інтеграція Istio для Canary-релізів та глибшого спостереження за трафіком (mTLS).
+
+- [ ] Cost Optimization: Налаштування AWS для більш ефективного автоскейлінгу нод.
+
+- [ ] GitOps Pull Model: Перехід з GitHub Actions Push на ArgoCD для синхронізації стану кластера.
+
+- [ ] Testing: Додавання етапу Terratest для валідації інфраструктурного коду.
 
 ---
+
 <p align="center">Made with ❤️ by ExitCodeOne</p>
 
-
- додай навігацію 

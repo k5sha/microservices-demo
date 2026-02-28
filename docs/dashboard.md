@@ -13,8 +13,8 @@
 - **Latency p95** — `TargetResponseTime (p95)`
 - **ASG Capacity** — `Desired / InService / Total` (context: навантаження вузла)
 
-**Screenshot:**  
-image
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Production.jpg" />
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Reliability-Staging.jpg" />
 
 ---
 
@@ -29,8 +29,8 @@ image
 - **Memory utilization per pod (stacked bar)** — Порівняння оперативної пам'яті за послугами
 - **Scaled / readiness (bar)** — сигнал готовності/масштабування
 
-**Screenshot:**  
-image
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Scalability-Production.jpg" />
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/App-Scalability-Staging.jpg" />
 
 ---
 
@@ -44,8 +44,8 @@ image
 - **Pod restarts (timeseries)** — `pod_number_of_container_restarts`
 - **EKS control plane (timeseries)** — `apiserver_request_total_5XX` + `apiserver_request_duration_seconds_*_P99`
 
-**Screenshot:**  
-image
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/Infra-Health-Production.jpg" />
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/Infra-Health-Staging.jpg" />
 
 ---
 
@@ -65,10 +65,7 @@ image
 - **EKS API 5XX STAG** — `apiserver_request_total_5XX` поріг (5 min)
 - **EKS API 5XX PROD** — `apiserver_request_total_5XX` поріг (5 min)
 
-> **Note:** `apiserver_request_total_5XX` це **EKS control plane 5xx**, а не додаток 5xx.  
-
-**Screenshot (alarms list):**  
-image
-
+> **Note:** `apiserver_request_total_5XX` це **EKS control plane 5xx**, а не додаток 5xx.
+<img width="6539" height="3453" alt="image" src="https://github.com/k5sha/microservices-demo/blob/chore/add-dashboard/docs/img/Alarms.jpg" />
 ---
 
